@@ -1,5 +1,5 @@
-#include "utility/p_allocator.h"
-#include <iostream>
+#include"utility/p_allocator.h"
+#include<iostream>
 using namespace std;
 
 // the file that store the information of allocator
@@ -29,7 +29,9 @@ PAllocator::PAllocator() {
     ifstream freeListFile(freeListPath, ios::in|ios::binary);
     // judge if the catalog exists
     if (allocatorCatalog.is_open() && freeListFile.is_open()) {
-        allocatorCatalog>>this->maxFileId>>this->freeNum>>this->startLeaf.fileId>>this->startLeaf.offset;
+        // exist
+        // TODO
+	allocatorCatalog>>this->maxFileId>>this->freeNum>>this->startLeaf.fileId>>this->startLeaf.offset;
         for(int i = 0;i < this->freeNum;++i){
             PPointer pt;
             freeListFile>>pt.fileId>>pt.offset;
@@ -37,7 +39,8 @@ PAllocator::PAllocator() {
         }
     } else {
         // not exist, create catalog and free_list file, then open.
-        ofstream allocatorCatalogout(allocatorCatalogPath, ios::out|ios::binary);
+        // TODO
+	ofstream allocatorCatalogout(allocatorCatalogPath, ios::out|ios::binary);
         ofstream freeListFileout(freeListPath, ios::out|ios::binary);
         this->freeNum = 0;
         this->maxFileId = 1;
@@ -50,6 +53,7 @@ PAllocator::PAllocator() {
 }
 
 PAllocator::~PAllocator() {
+    // TODO
     string allocatorCatalogPath = DATA_DIR + P_ALLOCATOR_CATALOG_NAME;
     string freeListPath         = DATA_DIR + P_ALLOCATOR_FREE_LIST;
     ofstream allocatorCatalog(allocatorCatalogPath, ios::out|ios::binary);
@@ -63,11 +67,12 @@ PAllocator::~PAllocator() {
     this->persistCatalog();
     this->maxFileId = 1;
     freeList.clear();
-    fId2PmAddr.clear();
+    fId2PmAddr.clear();	
 }
 
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
 void PAllocator::initFilePmemAddr() {
+    // TODO
     char *pmemaddr;
     size_t mapped_len;
     int is_pmem;
@@ -80,7 +85,7 @@ void PAllocator::initFilePmemAddr() {
 
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
-    // char *addr = NULL;
+    // TODO
     map<uint64_t, char*>::iterator it;
     it = fId2PmAddr.begin();
     while(it != fId2PmAddr.end()){
@@ -94,6 +99,7 @@ char* PAllocator::getLeafPmemAddr(PPointer p) {
 // get and use a leaf for the fptree leaf allocation
 // return 
 bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
+    // TODO
     if(freeList.size() == 0)
         this->newLeafGroup();
     p = freeList[freeList.size() - 1];
@@ -131,6 +137,7 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
 }
 
 bool PAllocator::ifLeafUsed(PPointer p) {
+    // TODO
     if(p.fileId >= this->maxFileId)
         return false;
     for(int i = 0;i < freeList.size();++i){
@@ -141,6 +148,7 @@ bool PAllocator::ifLeafUsed(PPointer p) {
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
+    // TODO
     for(int i = 0;i < freeList.size();++i){
         if(p == freeList[i])
             return true;
@@ -150,6 +158,7 @@ bool PAllocator::ifLeafFree(PPointer p) {
 
 // judge whether the leaf with specific PPointer exists. 
 bool PAllocator::ifLeafExist(PPointer p) {
+    // TODO
     if(p.fileId >= this->maxFileId)
         return false;
     if((p.offset - LEAF_GROUP_HEAD) > 0 &&
@@ -161,6 +170,7 @@ bool PAllocator::ifLeafExist(PPointer p) {
 
 // free and reuse a leaf
 bool PAllocator::freeLeaf(PPointer p) {
+    // TODO
     freeList.push_back(p);
     char *addr = getLeafPmemAddr(p);
     addr[sizeof(uint64_t) + (p.offset - LEAF_GROUP_HEAD)/calLeafSize()] = 0;
@@ -189,6 +199,7 @@ bool PAllocator::freeLeaf(PPointer p) {
 }
 
 bool PAllocator::persistCatalog() {
+    // TODO
     map<uint64_t, char*>::iterator it;
     it = fId2PmAddr.begin();
     size_t length = LEAF_GROUP_HEAD + LEAF_GROUP_AMOUNT * calLeafSize();
@@ -205,6 +216,7 @@ bool PAllocator::persistCatalog() {
 */
 // create a new leafgroup, one file per leafgroup
 bool PAllocator::newLeafGroup() {
+    // TODO
     string str = DATA_DIR + to_string(this->maxFileId);
     ofstream create(str,ios::out|ios::binary);
     uint64_t t = 0;
