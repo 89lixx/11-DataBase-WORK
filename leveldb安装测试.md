@@ -28,5 +28,5 @@ sudo cp -r include/leveldb/ /usr/local/include/
 1w-rw-50-50-load.txt&1w-rw-50-50-run.txt进行性能测试
 
 
-![FPTreeDB架构](./asset/levelDB.png)
+![leveldb安装测试](./asset/levelDB.png)
 ## 测试成功
