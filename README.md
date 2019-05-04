@@ -1,32 +1,6 @@
-实现系统的时间计划：
-##第一阶段：4月25日-5月4日
-4.25-4.27：组内成员全部安装好pmdk和LevelDB库并检测效果
-4.28-5.1：分工实现lyscb.cpp，p_allocator和系统说明书
-5.2-5.3：组内交流并修改工作成果，结合LevelDB的使用，分别测试lyscb.cpp，p_allocator.cpp和utility_test.cpp，根据测试结果进一步完善代码
-5.4：整合第一阶段工作成果，提交v1版本branch
- 
-##第二阶段：5月5日-5月11日
-5.5-5.7：组内成员合作实现FPTreeDB的插入和重载操作，并通过FPTreeDB的插入和重载测试
-5.8-5.9：合作实现对应的fptree.cpp，完成对应fptree_test.cpp部分的运行
-5.10：组内交流并修改工作成果，测试对应的fptree.cpp，根据测试结果进一步完善代码
-5.11：整合第二阶段工作成果，提交v2版本branch
- 
-##第三阶段：5月12日-5月18日
-5.12-5.14：组内成员合作实现FPTreeDB的查询和更新操作，并通过FPTreeDB的查询和更新测试
-5.15-5.16：作实现对应的fptree.cpp，完成对应fptree_test.cpp部分的运行
-5.17：组内交流并修改工作成果，测试对应的fptree.cpp，根据测试结果进一步完善代码
-5.18：整合第三阶段工作成果，提交v3版本branch
- 
-##第四阶段：5月19日-5月31日
-5.19-5.22：分工实现实现FPTreeDB的删除和剩余的其他操作，并通过FPTreeDB相关操作的测试
-5.23：组内交流并分享工作成果，互相学习，进一步完善
-5.24-5.27：分工实现对应的fptree.cpp，完成对应fptree_test.cpp部分的运行
-5.28：组内交流并分享工作成果，互相学习
-5.29-5.30：组内交流并修改工作成果，测试对应的fptree.cpp，根据测试结果进一步完善代码
-5.31：整合全部的工作成果，提交final版本branch
 
 
-系统的基本说明：
+
 ## <center>《FPTreeDB键值存储系统》</center>
 ## 系统介绍
 FPTreeDB是一个简单的键值存储引擎，我们通过将其包装成一个调用库，供用户程序使用并管理其数据存储，实现相关操作，与LevelDB的使用方式类似   
@@ -40,7 +14,7 @@ FPTreeDB是一个简单的键值存储引擎，我们通过将其包装成一个
 
 系统架构：  
 
-![FPTreeDB架构](../asset/FPTreeDB.png)
+![FPTreeDB架构](./asset/FPTreeDB.png)
 
 ## 项目目录说明：  
 ```
@@ -93,15 +67,34 @@ VSCODE
 2. FPTreeDB插入和重载操作并通过相关测试，对应fptree.cpp的实现和fptree_test.cpp部分的运行 --- 5/11晚前发布v2版本branch(30分)
 3. FPTreeDB查询和更新操作并通过相关测试，对应fptree.cpp的实现和fptree_test.cpp部分的运行 --- 5/18晚前发布v3版本branch(10分)
 4. FPTreeDB删除操作和所有剩下实现以及测试，对应fptree.cpp的实现和fptree_test.cpp所有的运行 --- 5/31晚前发布final版本branch，作为最后发布版本(40分)
+## 实现系统的时间计划：
+### 第一阶段：4月25日-5月4日
+4.25-4.27：组内成员全部安装好pmdk和LevelDB库并检测效果  
+4.28-5.1：分工实现lyscb.cpp，p_allocator和系统说明书  
+5.2-5.3：组内交流并修改工作成果，结合LevelDB的使用，分别测试lyscb.cpp，p_allocator.cpp和utility_test.cpp，根据测试结果进一步完善代码  
+5.4：整合第一阶段工作成果，提交v1版本branch  
+ 
+### 第二阶段：5月5日-5月11日
+5.5-5.7：组内成员合作实现FPTreeDB的插入和重载操作，并通过FPTreeDB的插入和重载测试  
+5.8-5.9：合作实现对应的fptree.cpp，完成对应fptree_test.cpp部分的运行  
+5.10：组内交流并修改工作成果，测试对应的fptree.cpp，根据测试结果进一步完善代码  
+5.11：整合第二阶段工作成果，提交v2版本branch  
+ 
+### 第三阶段：5月12日-5月18日
+5.12-5.14：组内成员合作实现FPTreeDB的查询和更新操作，并通过FPTreeDB的查询和更新测试  
+5.15-5.16：作实现对应的fptree.cpp，完成对应fptree_test.cpp部分的运行  
+5.17：组内交流并修改工作成果，测试对应的fptree.cpp，根据测试结果进一步完善代码  
+5.18：整合第三阶段工作成果，提交v3版本branch
+ 
+### 第四阶段：5月19日-5月31日
 
-## 实验完成内容
-1. 系统说明书(README.md)
-2. PAllocator实现并通过utility测试
-3. LevelDB的使用以及测试，对应lycsb.cpp
-4. p_allocator.cpp的实现和运行
-5. utility_test.cpp的运行 
+5.19-5.22：分工实现实现FPTreeDB的删除和剩余的其他操作，并通过FPTreeDB相关操作的测试  
+5.23：组内交流并分享工作成果，互相学习，进一步完善  
+5.24-5.27：分工实现对应的fptree.cpp，完成对应  fptree_test.cpp部分的运行
+5.28：组内交流并分享工作成果，互相学习  
+5.29-5.30：组内交流并修改工作成果，测试对应的 fptree.cpp，根据测试结果进一步完善代码  
+5.31：整合全部的工作成果，提交final版本branch
 
----
 ## PMDK
 课程设计使用的是PMDK的libpmem库，这是其最基本的一个库，FPTree中所有涉及NVM的操作利用其进行。编程要用到的函数如下：
 1. pmem_map_file：打开并映射文件
