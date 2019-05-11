@@ -350,8 +350,6 @@ int LeafNode::getBit(const int& idx) {
     {
         return (bitmap[idx / 8] >> idx % 8 ) & 1;//get the value of the bit at idx
     }
-
-
 }
 
 Key LeafNode::getKey(const int& idx) {
