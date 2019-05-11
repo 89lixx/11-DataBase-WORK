@@ -329,7 +329,7 @@ void LeafNode::insertNonFull(const Key& k, const Value& v) {
     int i;
     for ( i = 0; i < this->degree*2; i++)
     {
-        if(!this->getBit(i)) break; //getBit=0
+        if(!this->getBit(i)) break; //getBit = 0
     }
     this->bitmap[i/8] |=(1 << i % 8);
     this->kv[i].k=k;
