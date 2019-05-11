@@ -50,8 +50,8 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
     // 1.insertion to the first leaf(only one leaf)
     if (this->isRoot && this->nKeys == 0) {
         // TODO
-        LeafNode* N = new LeafNode(tree);
-        N -> insert(k, v);
+        LeafNode* node = new LeafNode(tree);
+        node -> insert(k, v);
         insertNonFull(k, node);
         return newChild;
     }
@@ -65,14 +65,15 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
             insertNonFull(newChild.key, newChild.node);
             newChild = split();
             if(this->isRoot) {
-                InnerNode* newNode = new InnerNode(tree->degree, tree, true);
+                InnerNode* newRoot = new InnerNode(this->degree, tree, true);
                 isRoot = false;
-                newNode->insertNonFull(newChild.key, newChild.node);
-                this->tree->root = nowNode;
+                newRoot->insertNonFull(newChild.key, this);
+                newRoot->insertNonFull(newChild.key, newChild.node);
+                this->tree->root = nowRoot;
             }
         } else {
             insertNonFull(newChild.key, newChild.node);
-            newChild = NULL;
+            KeyNode* newChild = NULL;
         }
     }
     return newChild;
