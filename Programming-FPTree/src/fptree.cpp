@@ -304,13 +304,25 @@ LeafNode::~LeafNode() {
 // insert an entry into the leaf, need to split it if it is full
 KeyNode* LeafNode::insert(const Key& k, const Value& v) {
     KeyNode* newChild = NULL;
-    // TODO
+    if (this->n==this->degree*2)//判断叶子结点是否是满的
+    {
+        newchild=this->split();
+    }
+    this->insertNonFull(k,v);
     return newChild;
 }
 
 // insert into the leaf node that is assumed not full
 void LeafNode::insertNonFull(const Key& k, const Value& v) {
-    // TODO
+    int i;
+    for ( i = 0; i < this->degree*2; i++)
+    {
+        if(!this->getBit(i)) break; //getBit=0
+    }
+    this->bitmap[i/8] |=(1 << i % 8);
+    this->kv[i].k=k;
+    this->kv[i].v=v;
+    n++;
 }
 
 // split the leaf node
@@ -333,10 +345,11 @@ Key LeafNode::findSplitKey() {
 // TIPS: bit operation
 
 int LeafNode::getBit(const int& idx) {
-    // TODO
-    if(idx > 2*this->degree) return -1; //超过范围
-    
-    return 0;
+    if (idx > this->degree*2) {return -1;}
+    else
+    {
+        return (bitmap[idx / 8] >> idx % 8 ) & 1;//get the value of the bit at idx
+    }
 
 
 }
