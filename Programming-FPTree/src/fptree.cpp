@@ -461,5 +461,44 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO
-    return false;
+    PPointer PP = PAllocator::getAllocator()->getStartPointer();
+    if (PP.fileId == 0){
+        this->root = new InnerNode(this->degree,this,true);
+        return false;
+    }
+    LeafNode * lnode = new LeafNode(PP,this);
+    queue<Node *> nodes;
+    size_t len_now = 0, len_new = 0;
+    for (;lnode != NULL;lnode = lnode->next){
+        nodes.push(lnode);
+        ++len_now;
+    }
+    while(nodes.size() > 1 || nodes.front()->ifLeaf()){
+        InnerNode* Innode = new InnerNode(degree,this);
+        size_t  s   = len_now < 2 * degree + 1 ? len_now : degree;
+        for (size_t i = 0; i < s; ++i){
+            Node* node = nodes.front();
+            Key  minKey = MAX_KEY;
+            if(node->ifLeaf())
+                for (size_t j = 0; j < node->bitmapSize; ++j)
+                    if(node->getBit(j)){
+                        minKey = minKey > node->getKey(j) ? node->getKey(j):minKey;
+                    }
+            else{
+                minKey = keys[0];
+            }
+            Innode->insertLeaf(KeyNode{minKey, node});
+            nodes.pop();
+            --len_now;
+        }
+        nodes.push(Innode);
+        ++len_new;
+        if(len_now == 0){
+            len_now = len_new;
+            len_new = 0;
+        }
+    }
+    this->root->isRoot = true;
+    this->root = (InnerNode *)nodes.front();
+    return true;
 }
