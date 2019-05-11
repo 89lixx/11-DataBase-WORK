@@ -26,6 +26,20 @@ int InnerNode::findIndex(const Key& k) {
 // WARNING: can not insert when it has no entry
 void InnerNode::insertNonFull(const Key& k, Node* const& node) {
     // TODO
+    int i;
+    for(i = 0; i < this->nKeys; ++ i) {
+        if(this->keys[i] == k) return; //重复
+        if(this->keys[i] > k) {
+            break;
+        }
+        i++;
+    }
+    for(int j = this->nKeys; j > i; -- j) {
+        this->keys[j] = this->keys[j-1];
+        this->childrens[j] = this->childrens[j-1];
+    }
+    this->keys[i] = k;
+    this->childrens[i] = node;
 }
 
 // insert func
@@ -52,14 +66,89 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     // first and second leaf insertion into the tree
     if (this->isRoot && this->nKeys == 0) {
         // TODO
+        newChild->Key = leaf->key;
+        newChild->node = leaf->node;
+        this->childrens[0] = (Node *)leaf;
+        // this->
         return newChild;
     }
     
     // recursive insert
     // Tip: please judge whether this InnerNode is full
+    for(int i = 0; i < this->nKeys-1; ++ i) {
+        if(this->keys[i] == leaf->key || this->keys[i+1] == leaf->key) return newChild;
+        //1、如果是直接已经存在的点，那么就不需要再加入了，直接返回就行了
+
+
+        //2、最一般的情况，找到并直接插入，不满
+        if(this->keys[i] < leaf->key && this->keys[i+1] > leaf->key) {
+           
+
+            //找到了对应的位置了
+            if(this->nChild == 0 && this->nKeys < (2*this->degree+1)) { //这一层正好为页,且不满
+                //直接插入即可，但是要按照准顺序插入
+                int flag = 0; //用来找到插入的位置，然后后面的数据都向后移
+                for(; flag < this->nKeys; ++ flag) {
+                    if(leaf->key > this->keys[flag]) break;
+                }
+                // Key temp = this->keys[flag];
+                // this->keys[flag] = leaf->key;
+                for(int j = this->nKeys; j > flag+1; -- j) {
+                    this->keys[j] = this->kesy[j-1];
+                }
+                this->key[flag] = leaf->key;
+                this->nKeys ++;
+
+                return NULL;
+            }
+
+           
+            //3 这一层为叶，但是满了，要重新分配
+            //规则为：现在的假设为 1，2，3，4，5。插入的是6，那么要将中间的值分裂，中间的
+            //值放到父节点，
+            else if(this->nChild == 0 && this->nKeys == (2*this->degree+1)) {
+                int nkey = this->nKeys+1;
+                int mid = (this->nKeys+1)/2;
+                Key * temp = this->keys;
+                int length = this->nKeys;
+                // this->keys = new int[mid];
+                //分裂
+                InnerNode * left(this->degree, this->f(FpTree), false);
+                left->keys = new keys[mid];
+                left->nKeys = mid;
+                left->nChild = 0;
+                for(int j = 0; j < mid; ++ j) left->keys[j] = this->keys[j];
+                InnerNode * right(this->degree, this->f(FpTree), false);
+                right->nKeys = nkey - mid;
+                right->nChild = 0;
+                for(int j = 0; j < right; ++ j) right->keys[j] = this->keys[j+mid];
+                delete this->keys;
+                this->keys = new int[1]
+                this->nKeys += 1;
+                this->nChild += 2;
+                this->keys = right->keys[0];
+                this->childrens = new int[2];
+                this->childrens[0] = (Node*)left;
+                this->childrens[1] = (Node*)right;
+                leaf->key = left->getKey();
+                return leaf;
+
+            }
+
+            // //这一层不是叶，那么需要再次向下找
+            // else if(this->nChild != 0) {
+            //     //这个时候使用递归，进行广度遍历
+            //     for(int j = 0; j < nChild; ++ j) {
+            //         this = (Node*)this->childrens[j];
+            //         return insertLeaf(leaf);
+            //     }
+
+            // }
+        }
+    }
+
     // next level is not leaf, just insertLeaf
     // TODO
-
     // next level is leaf, insert to childrens array
     // TODO
 
@@ -221,9 +310,14 @@ Key LeafNode::findSplitKey() {
 
 // get the targte bit in bitmap
 // TIPS: bit operation
+
 int LeafNode::getBit(const int& idx) {
     // TODO
+    if(idx > 2*this->degree) return -1; //超过范围
+    
     return 0;
+
+
 }
 
 Key LeafNode::getKey(const int& idx) {
