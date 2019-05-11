@@ -50,11 +50,31 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
     // 1.insertion to the first leaf(only one leaf)
     if (this->isRoot && this->nKeys == 0) {
         // TODO
+        LeafNode* N = new LeafNode(tree);
+        N -> insert(k, v);
+        insertNonFull(k, node);
         return newChild;
     }
     
     // 2.recursive insertion
     // TODO
+    int find = findIndex(k);
+    newChild = childrens[find]->insert(k, v);
+    if(newChild != NULL) {
+        if(nKeys > 2 * degree) {
+            insertNonFull(newChild.key, newChild.node);
+            newChild = split();
+            if(this->isRoot) {
+                InnerNode* newNode = new InnerNode(tree->degree, tree, true);
+                isRoot = false;
+                newNode->insertNonFull(newChild.key, newChild.node);
+                this->tree->root = nowNode;
+            }
+        } else {
+            insertNonFull(newChild.key, newChild.node);
+            newChild = NULL;
+        }
+    }
     return newChild;
 }
 
