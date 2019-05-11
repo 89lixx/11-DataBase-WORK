@@ -15,7 +15,19 @@ InnerNode::~InnerNode() {
 // binary search the first key in the innernode larger than input key
 int InnerNode::findIndex(const Key& k) {
     // TODO
-    return 0;
+    int upper = nkeys - 1, lower = 0;
+    int temp;
+    while(lower <= upper) {
+        temp = (lower + hign) / 2;
+        if(k < keys[temp]) {
+            upper = temp - 1;
+        } else if(k > keys[temp]) {
+            lower = temp + 1;
+        } else {
+            return temp + 1;
+        } 
+    }
+    return lower;
 }
 
 // insert the node that is assumed not full
