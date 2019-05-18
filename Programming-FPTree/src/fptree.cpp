@@ -71,11 +71,32 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
     // 1.insertion to the first leaf(only one leaf)
     if (this->isRoot && this->nKeys == 0) {
         // TODO
+        LeafNode* node = new LeafNode(tree);
+        node -> insert(k, v);
+        insertNonFull(k, node);
         return newChild;
     }
     
     // 2.recursive insertion
     // TODO
+    int find = findIndex(k);
+    newChild = childrens[find]->insert(k, v);
+    if(newChild != NULL) {
+        if(nKeys > 2 * degree) {
+            insertNonFull(newChild.key, newChild.node);
+            newChild = split();
+            if(this->isRoot) {
+                InnerNode* newRoot = new InnerNode(this->degree, tree, true);
+                isRoot = false;
+                newRoot->insertNonFull(newChild.key, this);
+                newRoot->insertNonFull(newChild.key, newChild.node);
+                this->tree->root = nowRoot;
+            }
+        } else {
+            insertNonFull(newChild.key, newChild.node);
+            KeyNode* newChild = NULL;
+        }
+    }
     return newChild;
 }
 
@@ -309,12 +330,26 @@ LeafNode::~LeafNode() {
 KeyNode* LeafNode::insert(const Key& k, const Value& v) {
     KeyNode* newChild = NULL;
     // TODO
+    if (this->n==this->degree*2)//判断叶子结点是否是满的
+    {
+        newchild=this->split();
+    }
+    this->insertNonFull(k,v);
     return newChild;
 }
 
 // insert into the leaf node that is assumed not full
 void LeafNode::insertNonFull(const Key& k, const Value& v) {
     // TODO
+    int i;
+    for ( i = 0; i < this->degree*2; i++)
+    {
+        if(!this->getBit(i)) break; //getBit = 0
+    }
+    this->bitmap[i/8] |=(1 << i % 8);
+    this->kv[i].k=k;
+    this->kv[i].v=v;
+    n++;
 }
 
 // split the leaf node
@@ -466,5 +501,44 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO
-    return false;
+    PPointer PP = PAllocator::getAllocator()->getStartPointer();
+    if (PP.fileId == 0){
+        this->root = new InnerNode(this->degree,this,true);
+        return false;
+    }
+    LeafNode * lnode = new LeafNode(PP,this);
+    queue<Node *> nodes;
+    size_t len_now = 0, len_new = 0;
+    for (;lnode != NULL;lnode = lnode->next){
+        nodes.push(lnode);
+        ++len_now;
+    }
+    while(nodes.size() > 1 || nodes.front()->ifLeaf()){
+        InnerNode* Innode = new InnerNode(degree,this);
+        size_t  s   = len_now < 2 * degree + 1 ? len_now : degree;
+        for (size_t i = 0; i < s; ++i){
+            Node* node = nodes.front();
+            Key  minKey = MAX_KEY;
+            if(node->ifLeaf())
+                for (size_t j = 0; j < node->bitmapSize; ++j)
+                    if(node->getBit(j)){
+                        minKey = minKey > node->getKey(j) ? node->getKey(j):minKey;
+                    }
+            else{
+                minKey = keys[0];
+            }
+            Innode->insertLeaf(KeyNode{minKey, node});
+            nodes.pop();
+            --len_now;
+        }
+        nodes.push(Innode);
+        ++len_new;
+        if(len_now == 0){
+            len_now = len_new;
+            len_new = 0;
+        }
+    }
+    this->root->isRoot = true;
+    this->root = (InnerNode *)nodes.front();
+    return true;
 }
