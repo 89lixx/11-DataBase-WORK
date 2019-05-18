@@ -3,19 +3,40 @@
 using namespace std;
 
 // Initial the new InnerNode
-InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
+InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot): Node(t, false){
     // TODO
+    this->degree = t->degree;
+    this->isRoot = _isRoot;
+    this->nKeys = 0;
+    this->nChild = 0;
+    this->keys = new Key[2 * d + 2];
+    this->childrens = new Node* [2 * d + 2];
 }
 
 // delete the InnerNode
 InnerNode::~InnerNode() {
     // TODO
+    delete[] keys;
+    delete[] children;
 }
 
 // binary search the first key in the innernode larger than input key
 int InnerNode::findIndex(const Key& k) {
     // TODO
-    return 0;
+    if(k < keys[0])
+        return 0;
+    int upper = nkeys - 1, lower = 0;
+    int temp;
+    while(upper - lower > 1) {
+        temp = (lower + hign) / 2;
+        if(k < keys[temp]) {
+            upper = temp;
+        } 
+        else if(k >= keys[temp]) {
+            lower = temp;
+        }
+    }
+    return upper;
 }
 
 // insert the node that is assumed not full
@@ -221,7 +242,11 @@ void InnerNode::removeChild(const int& keyIdx, const int& childIdx) {
 // update the target entry, return true if the update succeed.
 bool InnerNode::update(const Key& k, const Value& v) {
     // TODO
-    return false;
+    int pos = findIndex(k);
+    if(pos == 0)
+        return false;
+    else
+        return children[pos - 1]->update(k,v);
 }
 
 // find the target value with the search key, return MAX_VALUE if it fails.
