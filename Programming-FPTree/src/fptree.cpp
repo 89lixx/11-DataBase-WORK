@@ -375,11 +375,11 @@ Key LeafNode::findSplitKey() {
 
 int LeafNode::getBit(const int& idx) {
     // TODO
-    if(idx > 2*this->degree) return -1; //超过范围
-    
-    return 0;
-
-
+    if (idx > this->degree*2) {return -1;} //超过范围
+    else
+    {
+        return (bitmap[idx / 8] >> idx % 8 ) & 1;//get the value of the bit at idx
+    }
 }
 
 Key LeafNode::getKey(const int& idx) {
