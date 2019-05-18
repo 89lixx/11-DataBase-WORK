@@ -423,13 +423,22 @@ bool LeafNode::update(const Key& k, const Value& v) {
 // if the entry can not be found, return the max Value
 Value LeafNode::find(const Key& k) {
     // TODO
-    return MAX_VALUE;
+    for(int i;i<this->degree*2;i++){
+        if(this->getBit(i) == 1 && this->fingerprints[i] == keyHash(k) && this->getKey(i) == k){
+            return this->getValue(i);
+        }
+    else return MAX_VALUE;
+    }
 }
 
 // find the first empty slot
 int LeafNode::findFirstZero() {
     // TODO
-    return -1;
+    for(int i;i<this->degree*2;i++){
+        if(!this->getBit(i))
+        return i;
+    }
+        else  return -1;
 }
 
 // persist the entire leaf
