@@ -1,9 +1,9 @@
 # 11-DataBase-WORK
 this is a responsibility of group 11, and all our work will be uploaded here
 
-## 5.11 更新
+## 5.18 更新
 
-1、新建分支，名为"5.11"
+1、新建分支，名为"5.18"
 
-2、完成insert，重载部分
+2、完成更新、查找部分
 
