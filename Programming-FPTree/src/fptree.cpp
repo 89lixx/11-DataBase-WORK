@@ -273,6 +273,8 @@ bool InnerNode::update(const Key& k, const Value& v) {
 // find the target value with the search key, return MAX_VALUE if it fails.
 Value InnerNode::find(const Key& k) {
     // TODO
+    int temp = findIndex(k);
+    if(temp > 0) return childrens[temp]->find(k);
     return MAX_VALUE;
 }
 
@@ -406,6 +408,15 @@ bool LeafNode::remove(const Key& k, const int& index, InnerNode* const& parent, 
 bool LeafNode::update(const Key& k, const Value& v) {
     bool ifUpdate = false;
     // TODO
+    for(int i = 0; i < 2 * degree; i ++) {
+        if(getBit(i) == 1 && fingerprints[i] == keyHash(k) && getKey(i) == k) {
+            kv[i].v = v;
+            ifUpdate = true;
+            persist();
+            break;
+        }
+    }
+    
     return ifUpdate;
 }
 
@@ -425,6 +436,7 @@ int LeafNode::findFirstZero() {
 // use PMDK
 void LeafNode::persist() {
     // TODO
+    pmem_msync(pmem_addr, calLeafSize());
 }
 
 // call by the ~FPTree(), delete the whole tree
