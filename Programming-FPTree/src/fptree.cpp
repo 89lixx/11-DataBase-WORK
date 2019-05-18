@@ -424,6 +424,7 @@ bool FPTree::update(Key k, Value v) {
 
 Value FPTree::find(Key k) {
     if (root != NULL) {
+        
         return root->find(k);
     }
 }
