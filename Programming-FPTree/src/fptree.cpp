@@ -28,7 +28,7 @@ int InnerNode::findIndex(const Key& k) {
     int upper = nkeys - 1, lower = 0;
     int temp;
     while(upper - lower > 1) {
-        temp = (lower + hign) / 2;
+        temp = (lower + upper) / 2;
         if(k < keys[temp]) {
             upper = temp;
         } 
