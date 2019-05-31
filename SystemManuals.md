@@ -12,7 +12,7 @@ FPTreeDB是一个简单的键值存储引擎，我们通过将其包装成一个
 3. Update改
 4. Find查
 
-## 1.3系统恢复方式：
+## 1.3 系统恢复方式：
 BulkLoading方式  
 ![bulkLoading](./asset/bulkLoading.png)
 
@@ -61,14 +61,14 @@ BulkLoading方式
 VSCODE
 ## 1.7 项目测试
 YCSB测试和 Google Test 测试
-# 二.实现步骤
+# 二. 实现步骤
 
 1. 自行编译安装[LevelDB](https://github.com/google/leveldb)，编写利用ycsb测试代码，测试levelDB性能
 2. 根据说明和注释完成cpp源文件和编译命令(**使用c++11标准编译**)
 3. 编译main和所有的测试代码，通过所有单元测试
 4. 利用ycsb测试代码，读取workload的操作，对FPTree进行性能测试，与LevelDB对比
 
-## 2.1实现系统的时间计划：
+## 2.1 实现系统的时间计划：
 ### 第一阶段：4月25日-5月4日
 4.25-4.27：组内成员全部安装好pmdk和LevelDB库并检测效果  
 4.28-5.1：分工实现lyscb.cpp，p_allocator和系统说明书  
@@ -134,7 +134,7 @@ bool FPTree::bulkLoading() //重建
 ![bulkLoading](./asset/bulkLoading.png)
 
 
-## 2.3KeyNode
+## 2.3 KeyNode
 这个数据结构由一个代表键值和节点的索引组成，用于节点分裂时，将新生成的节点索引返回给上层节点插入记录。其用在插入操作和分裂操作中。如下图的插入操作:   
   ![insert](./asset/insert.png)  
 
