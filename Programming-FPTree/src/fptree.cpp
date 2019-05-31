@@ -475,7 +475,11 @@ Key LeafNode::findSplitKey() {
 // TIPS: bit operation
 int LeafNode::getBit(const int& idx) {
     // TODO
-    return 0;
+    if (idx > this->degree*2) {return -1;} //超过范围
+    else
+    {
+        return (bitmap[idx / 8] >> (idx % 8 )) & 1;//get the value of the bit at idx
+    }
 }
 
 Key LeafNode::getKey(const int& idx) {
@@ -540,12 +544,24 @@ bool LeafNode::update(const Key& k, const Value& v) {
 // if the entry can not be found, return the max Value
 Value LeafNode::find(const Key& k) {
     // TODO
+    Byte* fp = fingerprints;
+    Byte hash = keyHash(k);
+    for (int i = 0; i < degree * 2; ++i) {
+        if (getBit(i) && (kv[i].k == k)&&(fingerprints[i] == hash)) {
+            return kv[i].v;
+        }
+        fp++;
+    }
     return MAX_VALUE;
 }
 
 // find the first empty slot
 int LeafNode::findFirstZero() {
     // TODO
+    int i;
+    for (i = 0; i < this->degree * 2; i++)
+        if (!this->getBit(i))
+            return i;
     return -1;
 }
 
@@ -553,6 +569,7 @@ int LeafNode::findFirstZero() {
 // use PMDK
 void LeafNode::persist() {
     // TODO
+    pmem_persist(pmem_addr,calLeafSize());
 }
 
 // call by the ~FPTree(), delete the whole tree
@@ -620,6 +637,24 @@ Value FPTree::find(Key k) {
 // TIPS: use Queue
 void FPTree::printTree() {
     // TODO
+    queue<Node *> q;
+    q.push(root);
+    while(!q.empty()) {
+        Node *tmp = q.front();
+        if(!tmp->isLeaf){
+            InnerNode* in = dynamic_cast<InnerNode*>(tmp);
+            in->printNode();
+            for(int i = 0; i < in->getChildNum(); i ++) {
+                q.push(in->getChild(i));
+            }
+        }
+        else {
+            LeafNode* l = dynamic_cast<LeafNode*>(tmp);
+            l->printNode();
+        }
+        q.pop();
+    }
+    cout << endl;
 }
 
 // bulkLoading the leaf files and reload the tree
@@ -628,5 +663,24 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO
-    return false;
+    PPointer PP = PAllocator::getAllocator()->getStartPointer();
+    if (PP.fileId == 0){
+        return false;
+    }
+    LeafNode * lnode = new LeafNode(PP,this);
+    KeyNode keynode;
+    while(lnode != NULL) {
+        Key res;
+        keynode.node = lnode;
+        int i = 0;
+        for(; i < lnode->n; ++ i) 
+            if(lnode->getBit(i) && lnode->getKey(i) < res)
+                res = lnode->getKey(0);
+
+        keynode.key = res;
+        this->root->insertLeaf(keynode);
+        //bianli
+        lnode = lnode->next;
+    }
+    return true;
 }
