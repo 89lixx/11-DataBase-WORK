@@ -12,7 +12,7 @@ FPTreeDB是一个简单的键值存储引擎，我们通过将其包装成一个
 3. Update改
 4. Find查
 
-## 1.3 系统恢复方式：
+## 1.3系统恢复方式：
 BulkLoading方式  
 ![bulkLoading](./asset/bulkLoading.png)
 
@@ -61,14 +61,15 @@ BulkLoading方式
 VSCODE
 ## 1.7 项目测试
 YCSB测试和 Google Test 测试
-# 二. 实现步骤
+# 二.实现步骤
 
 1. 自行编译安装[LevelDB](https://github.com/google/leveldb)，编写利用ycsb测试代码，测试levelDB性能
 2. 根据说明和注释完成cpp源文件和编译命令(**使用c++11标准编译**)
 3. 编译main和所有的测试代码，通过所有单元测试
 4. 利用ycsb测试代码，读取workload的操作，对FPTree进行性能测试，与LevelDB对比
 
-## 2.1 实现系统的时间计划：
+
+## 2.1实现系统的时间计划：
 ### 第一阶段：4月25日-5月4日
 4.25-4.27：组内成员全部安装好pmdk和LevelDB库并检测效果  
 4.28-5.1：分工实现lyscb.cpp，p_allocator和系统说明书  
@@ -91,13 +92,13 @@ YCSB测试和 Google Test 测试
 
 5.19-5.22：分工实现实现FPTreeDB的删除和剩余的其他操作，并通过FPTreeDB相关操作的测试  
 5.23：组内交流并分享工作成果，互相学习，进一步完善  
-5.24-5.27：分工实现对应的fptree.cpp，完成对应  fptree_test.cpp部分的运行  
+5.24-5.27：分工实现对应的fptree.cpp，完成对应  fptree_test.cpp部分的运行
 5.28：组内交流并分享工作成果，互相学习  
 5.29-5.30：组内交流并修改工作成果，测试对应的 fptree.cpp，根据测试结果进一步完善代码  
 5.31：整合全部的工作成果，提交final版本branch
 
 ## 2.2 FPtree
-这是整个键值存储系统的接口类，通过其调用InnerNode进而调用LeafNode进行键值对操作。一个FPTree就是一个键值对数据库，对应一个文件夹。其数据文件与PAllocator的管理文件存在在同一个文件夹下  
+
 ```
 FPTree::FPTree(uint64_t t_degree) //构造
 
@@ -130,17 +131,17 @@ void FPTree::printTree() //打印树
 ```
 bool FPTree::bulkLoading() //重建
 ```
-这是树重建的主要函数。在新建一个树的时候，先检查目标文件夹内有没有数据文件，遍历文件进行BulkLoading。没有数据文件则进行新树的生成  
 ![bulkLoading](./asset/bulkLoading.png)
 
 
-## 2.3 KeyNode
-这个数据结构由一个代表键值和节点的索引组成，用于节点分裂时，将新生成的节点索引返回给上层节点插入记录。其用在插入操作和分裂操作中。如下图的插入操作:   
+## 2.3KeyNode
+由键值，节点的索引组成    
+用于插入和分裂操作中  
   ![insert](./asset/insert.png)  
 
 
 ## 2.4 LeafNode
-这是整个FPTree存储数据的直接对象，所有键值对数据只存放于叶子节点中。所以叶子节点也是与NVM交互的对象，只要是操作PAllocator映射NVM文件后的虚拟地址，通过文件映射的方式操作相应数据文件。因为节点的操作对象是内存映射文件数据后的虚拟地址，所以关键是设置好NVM数据的指针。结构如下：   
+FPtree所有的键值对数据信息存放于叶子节点中，节点的操作对象是内存映射文件数据的虚拟地址，所以要设置好如下图结构的指针  
   ![LeafNode](./asset/LeafNode.png)  
 ```
 //构造，析构
@@ -175,7 +176,7 @@ void LeafNode::printNode()
 ```
 
 ## 2.5 InnerNode
-FPtree中间索引节点  
+FPtree中间节点的索引  
   ![InnerNode](./asset/InnerNode.png)   
   ```
   //构造，析构
@@ -272,6 +273,8 @@ bool PAllocator::persistCatalog()
 bool PAllocator::newLeafGroup() 
 ```
 
+
+
 ## PMDK
 课程设计使用的是PMDK的libpmem库，这是其最基本的一个库，FPTree中所有涉及NVM的操作利用其进行。编程要用到的函数如下：
 1. pmem_map_file：打开并映射文件
@@ -288,7 +291,7 @@ INSERT 6284781860667377211
 上面INSERT表示插入操作，后面是键值。因为FPTreeDB键值对为8bytes-8bytes，所以**只需取这个值的前8字节即可**。为了简单起见，**键和值取相同即可**。所以请按上述要求和说明实现lycsb和ycsb的运行代码。
 
 ## Google Test单元测试
-单元测试的源文件在test文件夹下，每个测试的名称对应其要测试的目标函数和功能，上面介绍的硬性要求的每个阶段需要通过的测试可以通过测试名得知(别说看不懂测试名)。当测试的目标功能没有完成时会发生段错误，所以测试时把未完成的功能的测试先注释掉再跑测试即可。
+单元测试的源文件在test文件夹下，每个测试的名称对应其要测试的目标函数和功能，上面介绍的硬性要求的每个阶段需要通过的测试可以通过测试名得知(别说看不懂测试名)。当测试的目标功能没有完成时会发生段错误，所以测试时把未完成的功能的测试先注释掉再跑测试即可。代码**。
 
 
 
