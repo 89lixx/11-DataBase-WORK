@@ -25,23 +25,63 @@ int InnerNode::findIndex(const Key& k) {
 // ======================
 // WARNING: can not insert when it has no entry
 void InnerNode::insertNonFull(const Key& k, Node* const& node) {
-    // TODO
+    int i = findIndex(k);
+    for(int j = this->nKeys; j > i; -- j) {
+        this->keys[j] = this->keys[j-1];
+        this->childrens[j] = this->childrens[j-1];
+    }
+    this->keys[i] = k;
+    this->childrens[i+1] = node;
+    this->nKeys ++;
+    this->nChild ++;
 }
 
 // insert func
 // return value is not NULL if split, returning the new child and a key to insert
 KeyNode* InnerNode::insert(const Key& k, const Value& v) {
-    KeyNode* newChild = NULL;
+        KeyNode* newChild = NULL;
 
     // 1.insertion to the first leaf(only one leaf)
-    if (this->isRoot && this->nKeys == 0) {
+    if (this->isRoot && this->nKeys == 0 && this->nChild == 0) {
         // TODO
-        return newChild;
+        KeyNode* newch = new KeyNode[1];
+        newch->node = new LeafNode(tree);
+        newch->node->insert(k,v);
+        newch->key = k;
+        // this->keys[0] = k;
+        this->childrens[0] = newch->node;
+
+        // this->nKeys = 1;
+        this->nChild ++;
+        return NULL;
     }
-    
-    // 2.recursive insertion
-    // TODO
+    int find = findIndex(k);
+    newChild = childrens[find]->insert(k,v);
+
+    if(newChild != NULL) {
+        insertNonFull(newChild->key, newChild->node);
+
+        if(this->nKeys > degree * 2) {
+            newChild = this->split();
+            if (this->isRoot) {
+                this->isRoot = false;
+                InnerNode * newRoot = new InnerNode(this->degree, tree, true);
+                newRoot->nKeys = 1;
+                newRoot->nChild = 2;
+                newRoot->keys[0] = newChild->key;
+                newRoot->childrens[0] = this;
+                newRoot->childrens[1] = newChild->node;
+                this->tree->changeRoot(newRoot);
+                return NULL;
+            }
+        }
+        else
+            return NULL;
+    }
+    else
+        return NULL;
     return newChild;
+
 }
 
 // ensure that the leaves inserted are ordered
@@ -259,7 +299,8 @@ void InnerNode::removeChild(const int& keyIdx, const int& childIdx) {
 // update the target entry, return true if the update succeed.
 bool InnerNode::update(const Key& k, const Value& v) {
     // TODO
-    return false;
+    int find = findIndex(k);
+    return this->childrens[find]->update(k,v);
 }
 
 // find the target value with the search key, return MAX_VALUE if it fails.
@@ -322,12 +363,28 @@ LeafNode::~LeafNode() {
 KeyNode* LeafNode::insert(const Key& k, const Value& v) {
     KeyNode* newChild = NULL;
     // TODO
+        if (this->n >= this->degree*2 - 1)
+    {
+        insertNonFull(k, v);
+        newChild=split();
+        this->next = (LeafNode *)newChild->node;
+        ((LeafNode* )(newChild->node))-> prev =this;
+    }
+    else 
+        insertNonFull(k,v);
     return newChild;
 }
 
 // insert into the leaf node that is assumed not full
 void LeafNode::insertNonFull(const Key& k, const Value& v) {
     // TODO
+    int i = findFirstZero(); 
+    this->fingerprints[i] = keyHash(k);
+    this->bitmap[i / 8] |= 1 << (i % 8);
+    this->kv[i].k = k;
+    this->kv[i].v = v;
+    n++;
+    persist();
 }
 
 // split the leaf node
@@ -400,6 +457,15 @@ bool LeafNode::remove(const Key& k, const int& index, InnerNode* const& parent, 
 bool LeafNode::update(const Key& k, const Value& v) {
     bool ifUpdate = false;
     // TODO
+    for(int i = 0; i < 2 * degree; i ++) {
+        if(getBit(i) == 1 && fingerprints[i] == keyHash(k) && getKey(i) == k) {
+            kv[i].v = v;
+            ifUpdate = true;
+            persist();
+            break;
+        }
+    }
+    
     return ifUpdate;
 }
 
