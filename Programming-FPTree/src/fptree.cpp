@@ -273,22 +273,90 @@ void InnerNode::mergeParentRight(InnerNode* const& parent, InnerNode* const& rig
 // the left has more entries
 void InnerNode::redistributeLeft(const int& index, InnerNode* const& leftBro, InnerNode* const& parent) {
     // TODO
+    int i = 0;
+    for(i = parent->nChild; i > 0; -- i) {
+        parent->childrens[i] = parent->childrens[i-1];
+        if(i < parent->nChild){
+            parent->keys[i] = parent->keys[i-1];
+        }
+    }
+
+    parent->childrens[0] = leftBro->childrens[leftBro->nChild-1];
+    parent->keys[0] = parent->keys[index-1];
+    parent->keys[index-1] = leftBro->keys[leftBro->nKeys -1];
+    
+    parent->nChild++;
+    parent->nKeys ++;
+    leftBro->nChild --;
+    leftBro->nKeys --;
 }
 
 // this node and its right brother redistribute
 // the right has more entries
 void InnerNode::redistributeRight(const int& index, InnerNode* const& rightBro, InnerNode* const& parent) {
+
     // TODO
+    Key key = rightBro->keys[0];
+    this->keys[nKeys++] = parent->keys[index];
+    parent->keys[index] = key;
+    this->childrens[nChild++] = rightBro->childrens[0];
+    rightBro->nChild--;
+    rightBro->nKeys--;
+    int i = 0;
+    for(; i < rightBro->nChild; ++i) {
+        if (i < rightBro->nChild - 1){
+            rightBro->keys[i] = rightBro->keys[i + 1];
+        }
+        rightBro->childrens[i] = rightBro->childrens[i + 1];
+    }
 }
 
 // merge all entries to its left bro, delete this node after merging.
 void InnerNode::mergeLeft(InnerNode* const& leftBro, const Key& k) {
     // TODO
+
+    int i = 0;
+    int nchild = leftBro->nChild;
+    int nkey = leftBro->nKeys;
+    for(; i < this->nChild; ++ i) {
+        leftBro->childrens[nchild + i] = this->childrens[i];
+        if(i == 0) leftBro->keys[i+nkey] = k;
+        else leftBro->keys[i+nkey] = this->keys[i-1];
+    }
+
+    //update
+    leftBro->nChild += this->nChild;
+    leftBro->nKeys += this->nKeys + 1;
+    // delete this;
+    this->nChild = 0;
+    this->nKeys = 0;
 }
 
 // merge all entries to its right bro, delete this node after merging.
 void InnerNode::mergeRight(InnerNode* const& rightBro, const Key& k) {
     // TODO
+
+    int i = 0;
+    int nchild = rightBro->nChild;
+    int nkey = rightBro->nKeys;
+    for(; i < this->nChild; ++ i) {
+        rightBro->childrens[nchild + i] = this->childrens[i];
+        if(i != nchild-1) rightBro->keys[i] = this->keys[i];
+        else rightBro->keys[i] = k;
+    }
+
+    for (i = nchild + this->nChild - 1; i >= this->nChild; --i) {
+        rightBro->childrens[i] = rightBro->childrens[i - this->nChild];
+        if (i != nchild+ this->nChild - 1)
+            rightBro->keys[i] = rightBro->keys[i - this->nChild];
+    }
+
+    //update
+    rightBro->nChild += this->nChild;
+    rightBro->nKeys += this->nKeys + 1;
+    // delete this;
+    this->nChild = 0;
+    this->nKeys = 0;
 }
 
 // remove a children from the current node, used by remove func
