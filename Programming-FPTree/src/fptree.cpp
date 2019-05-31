@@ -332,25 +332,22 @@ LeafNode::~LeafNode() {
 KeyNode* LeafNode::insert(const Key& k, const Value& v) {
     KeyNode* newChild = NULL;
     // TODO
-    if (this->n==this->degree*2)//判断叶子结点是否是满的
+    this->insertNonFull(k,v);//判断是不是满的
+    if (this->n==this->degree*2)//若满就拆
     {
         newchild=this->split();
     }
-    this->insertNonFull(k,v);
     return newChild;
 }
 
 // insert into the leaf node that is assumed not full
 void LeafNode::insertNonFull(const Key& k, const Value& v) {
     // TODO
-    int i;
-    for ( i = 0; i < this->degree*2; i++)
-    {
-        if(!this->getBit(i)) break; //getBit = 0
-    }
-    this->bitmap[i/8] |=(1 << i % 8);
+    int i=findFirstZero();
+    this->bitmap[i/8] |=(1 << (7-i % 8));
     this->kv[i].k=k;
     this->kv[i].v=v;
+    this->fingerprints[i]= keyHash(k);
     n++;
 }
 
@@ -423,11 +420,13 @@ bool LeafNode::update(const Key& k, const Value& v) {
 // if the entry can not be found, return the max Value
 Value LeafNode::find(const Key& k) {
     // TODO
+    Byte fp = keyHash(k);
     for(int i;i<this->degree*2;i++){
-        if(this->getBit(i) == 1 && this->fingerprints[i] == keyHash(k) && this->getKey(i) == k){
+        if(this->getBit(i) == 1 && this->fingerprints[i] == fp && this->getKey(i) == k){
             return this->getValue(i);
         }
-    else return MAX_VALUE;
+    else 
+        return MAX_VALUE;
     }
 }
 
