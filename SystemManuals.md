@@ -240,9 +240,38 @@ Key InnerNode::getKey(const int& idx)
 
 LeafGroup是数据文件，其文件名用整数表示，从1递增分配即可，规定0为非法标号。PAllocator需要记录分配文件的最大标号，即catalog文件的maxFileId。catalog文件中freeNum为当前可用叶子数，treeStartLeaf为第一个叶子的持久化指针，用于重载树时从其开始，通过链表形式重载。freeList文件每个条目为空叶子的持久化指针，用于启动即可知道可用叶子。
 
-
-//需要补充
-
+```
+//构造析构
+PAllocator::PAllocator()  
+PAllocator::~PAllocator() 
+```
+```
+// 内存将所有叶映射到Pmem地址，存在FileID对应的虚拟地址处
+void PAllocator::initFilePmemAddr() 
+```
+```
+//获得叶子节点及其虚拟地址  
+char* PAllocator::getLeafPmemAddr(PPointer p)   
+bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr)   
+```
+```
+//叶子节点的状态  
+bool PAllocator::ifLeafUsed(PPointer p)   
+bool PAllocator::ifLeafFree(PPointer p)   
+bool PAllocator::ifLeafExist(PPointer p) 
+```
+```
+//释放叶节点
+bool PAllocator::freeLeaf(PPointer p) 
+```
+```
+//写入Catalog进入文件
+bool PAllocator::persistCatalog() 
+```
+```
+//创建新的LeafGroup
+bool PAllocator::newLeafGroup() 
+```
 
 ## PMDK
 课程设计使用的是PMDK的libpmem库，这是其最基本的一个库，FPTree中所有涉及NVM的操作利用其进行。编程要用到的函数如下：
