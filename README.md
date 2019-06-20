@@ -291,7 +291,16 @@ INSERT 6284781860667377211
 上面INSERT表示插入操作，后面是键值。因为FPTreeDB键值对为8bytes-8bytes，所以**只需取这个值的前8字节即可**。为了简单起见，**键和值取相同即可**。所以请按上述要求和说明实现lycsb和ycsb的运行代码。
 
 ## Google Test单元测试
-单元测试的源文件在test文件夹下，每个测试的名称对应其要测试的目标函数和功能，上面介绍的硬性要求的每个阶段需要通过的测试可以通过测试名得知(别说看不懂测试名)。当测试的目标功能没有完成时会发生段错误，所以测试时把未完成的功能的测试先注释掉再跑测试即可。代码**。
+单元测试的源文件在test文件夹下，每个测试的名称对应其要测试的目标函数和功能  
+先进入到src目录，make  
+然后进入到bin目录下面进行测试  
+
+fptree_test:  
+  ![fptree_test](./asset/fptree_test.png)     
+    ![fptree_test2](./asset/fptree_test2.png)     
+utility_test:  
+      ![utility_test](./asset/utility_test.png)   
+
 
 
 
