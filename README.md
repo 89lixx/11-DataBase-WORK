@@ -291,6 +291,7 @@ YCSB大体上分两个步：
  levelDB和FPtree DB 的性能对比测试
  ![ycsb](./asset/ycsb.png) 
 
+经过观察可以看出来，单位时间内FPtree的操作数量多于levelDB的，可以得出Fptree的性能由于levelDB的
 ## Google Test单元测试
 单元测试的源文件在test文件夹下，每个测试的名称对应其要测试的目标函数和功能  
 先进入到src目录，make  
