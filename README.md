@@ -279,16 +279,17 @@ bool PAllocator::newLeafGroup()
 课程设计使用的是PMDK的libpmem库，这是其最基本的一个库，FPTree中所有涉及NVM的操作利用其进行。编程要用到的函数如下：
 1. pmem_map_file：打开并映射文件
 2. pmem_persist：持久化对NVM内容的修改
+## levelDB测试：
+ ![lycsb](./asset/lycsb.png)  
 
 ## YCSB测试
 这是一个键值数据库性能测试的benchmark，细节请看其[github仓库](https://github.com/brianfrankcooper/YCSB)。  
 YCSB大体上分两个步：  
-第一步是读取load文件，插入一定量的数据对数据库进行初始化。  
-第二步是读取run文件，进行数据库相关操作。load和run文件的一条操作语句如下:
-```
-INSERT 6284781860667377211
-```
-上面INSERT表示插入操作，后面是键值。因为FPTreeDB键值对为8bytes-8bytes，所以**只需取这个值的前8字节即可**。为了简单起见，**键和值取相同即可**。所以请按上述要求和说明实现lycsb和ycsb的运行代码。
+第一步是读取load文件，插入一定量的数据对数据库进行初始化。    
+第二步是读取run文件，进行数据库相关操作。  
+
+ levelDB和FPtree DB 的性能对比测试
+ ![ycsb](./asset/ycsb.png) 
 
 ## Google Test单元测试
 单元测试的源文件在test文件夹下，每个测试的名称对应其要测试的目标函数和功能  
